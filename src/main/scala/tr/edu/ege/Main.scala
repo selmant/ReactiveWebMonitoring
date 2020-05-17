@@ -24,10 +24,11 @@ class Main extends Actor with ActorLogging {
 
   val webServer: ActorRef = context.actorOf(Props[WebServer], "webserver")
   webServer ! StartServer
+
   //  context.watch(scheduler)
   val pubMedBaseURI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmax=999999999&api_key=f3ddb4c1de06900a117c889d4cfbf0666808"
 
-  controller ! Submit(Resource(s"$pubMedBaseURI&term=asthma[mesh]+AND+leukotrienes[mesh]+AND+2009[pdat]"))
+//  controller ! Submit(Resource(s"$pubMedBaseURI&term=asthma[mesh]+AND+leukotrienes[mesh]+AND+2009[pdat]"))
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=1")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=coronavirus[mesh]")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=protein[mesh]+AND+diet[mesh]")) // Raw JSON Data
