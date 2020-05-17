@@ -41,4 +41,6 @@ object Messages {
 
   case class Schedule(resource: Resource) extends Message
 
+  case class StartServer() extends Message
+
 }

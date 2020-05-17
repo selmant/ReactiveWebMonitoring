@@ -5,7 +5,7 @@ import tr.edu.ege.actors.db.RedisDbService
 import tr.edu.ege.actors.{Checker, Controller, Publisher, Scheduler}
 import tr.edu.ege.client.AsyncWebClient
 import tr.edu.ege.messages.Messages
-import tr.edu.ege.messages.Messages.Submit
+import tr.edu.ege.messages.Messages.{StartServer, Submit}
 import tr.edu.ege.models.Resource
 
 import scala.concurrent.duration.FiniteDuration
@@ -22,6 +22,8 @@ class Main extends Actor with ActorLogging {
 
   val redisClient: ActorRef = context.actorOf(Props(new RedisDbService("redis.conf", "scredis", FiniteDuration(5, "seconds"))), "redisActor")
 
+  val webServer: ActorRef = context.actorOf(Props[WebServer], "webserver")
+  webServer ! StartServer
   //  context.watch(scheduler)
   val pubMedBaseURI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmax=999999999&api_key=f3ddb4c1de06900a117c889d4cfbf0666808"
 

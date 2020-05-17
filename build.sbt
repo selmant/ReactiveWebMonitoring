@@ -3,6 +3,7 @@ import com.typesafe.sbt.SbtMultiJvm.multiJvmSettings
 
 val akkaVersion = "2.5.26"
 val circeVersion = "0.11.1"
+val akkaHttpVersion = "10.1.11"
 
 lazy val `akka-sample-sharding-scala` = project
   .in(file("."))
@@ -36,7 +37,16 @@ lazy val `akka-sample-sharding-scala` = project
       "com.github.scredis" %% "scredis" % "2.3.3",
       "com.typesafe.akka" %% "akka-stream-kafka" % "1.0.5",
       "org.apache.kafka" %% "kafka" % "2.3.0",
-      "com.typesafe.play" %% "play-json" % "2.7.4"
+      "com.typesafe.play" %% "play-json" % "2.7.4",
+      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      "ch.qos.logback" % "logback-classic" % "1.0.0" % "runtime",
+      "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-http-xml" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+      "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
+      "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
     ),
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core",
