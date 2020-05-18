@@ -14,10 +14,8 @@ object UserHandler {
 
     sealed trait UserResponse
 
-    case class UserNotFound(username: String) extends UserResponse
     case object UserCreated extends UserResponse
-    case class UserDeleted(username: String) extends UserResponse
-    case object UserAlreadyExist extends UserResponse
+    case object UserNotCreated extends UserResponse
 
     trait JsonProtocol extends SprayJsonSupport with DefaultJsonProtocol {
         implicit val userFormat: RootJsonFormat[User] = jsonFormat2(User.apply)

@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, OneForOneStrategy, Props, ReceiveTimeout
 import akka.event.LoggingReceive
 import akka.pattern.ask
 import akka.util.Timeout
-import tr.edu.ege.actors.db.RedisDbT.{AddRequest, AddResult, FetchRequest, FetchResult}
+import tr.edu.ege.actors.db.RedisDbT.{AddRequest, AddResult, FetchRequest, FetchResult, AddInSetRequest}
 import tr.edu.ege.messages.Messages
 import tr.edu.ege.models.Job
 
@@ -26,7 +26,7 @@ class Checker extends Actor with ActorLogging {
   //  context.setReceiveTimeout(100.seconds)
 
   override def receive: Receive = LoggingReceive {
-    case msg@Messages.Check(resource) =>
+    case msg@Messages.Check(resource, user) =>
       log.info(s"Got check message:$msg")
 
       // TODO
@@ -62,6 +62,15 @@ class Checker extends Actor with ActorLogging {
                         reason = s"An error occurred while adding element to Redis",
                         mayBeThrowable = Some(value = exception)
                       )
+                  }
+                  user.foreach { usr =>
+                    (redisActor ? AddInSetRequest(s"user:${usr.username}:topics", s"${resource.url}")).onComplete {
+                      case Success(value) => value match {
+                        case AddResult(status) if status =>
+                          log.debug("Topic successfully added to User Set.")
+                        case AddResult(status) if !status => log.warning("Topic can not added to User Set.")
+                      }
+                    }
                   }
               }
           }

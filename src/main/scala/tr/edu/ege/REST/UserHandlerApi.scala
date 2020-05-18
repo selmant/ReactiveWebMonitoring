@@ -14,6 +14,4 @@ class UserHandlerApi(userHandler: ActorRef) {
 
     def addUser(username: String, password: String): Future[UserResponse] = (userHandler ? AddUser(username,password)).mapTo[UserResponse]
     def getUser(username: String): Future[User] = (userHandler ? GetUser(username)).mapTo[User]
-    def deleteUser(username: String): Future[User] = (userHandler ? DeleteUser(username)).mapTo[User]
-    def updateUser(username: String): Future[User] = (userHandler ? UpdateUser(username)).mapTo[User]
 }

@@ -30,4 +30,8 @@ object RedisDbT {
 
   case class DequeueResult(result: Option[String])
 
+  case class AddInSetRequest(key: String, value: String)
+
+  case class GetSetRequest(key: String)
+
 }

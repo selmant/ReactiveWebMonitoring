@@ -90,6 +90,28 @@ class RedisDbService(val configName: String, val path: String, val timeout: Fini
           log.error(ex,"Error Dequeuing in Redis : {}", ex.getMessage)
           currentSender ! DequeueResult(None)
       }
+
+    case req: AddInSetRequest =>
+      val currentSender = sender()
+      val saddFut = client.sAdd(req.key, req.value)
+      saddFut.onComplete {
+        case Success(res) =>
+          currentSender ! AddResult(true)
+        case Failure(ex) =>
+          log.error(ex,"Error Adding Element To Set : {}", ex.getMessage)
+          currentSender ! AddResult(false)
+      }
+
+    case req: GetSetRequest =>
+      val currentSender = sender()
+      val smembersFut = client.sMembers(req.key)
+      smembersFut.onComplete {
+        case Success(res) =>
+          currentSender ! res
+        case Failure(ex) =>
+          log.error(ex,"Error Getting Set from Redis : {}", ex.getMessage)
+          currentSender ! None
+      }
   }
 
   override def postStop(): Unit = {
