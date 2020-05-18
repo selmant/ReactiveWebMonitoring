@@ -1,12 +1,13 @@
 package tr.edu.ege.messages
 
+import tr.edu.ege.messages.UserHandler.User
 import tr.edu.ege.models.{Job, Resource}
 
 object Messages {
 
-  case class Submit(resource: Resource) extends Message
+  case class Submit(resource: Resource, user: Option[User] = None) extends Message
 
-  case class Check(resource: Resource) extends Message
+  case class Check(resource: Resource, user: Option[User] = None) extends Message
 
   case class Fetch(resource: Resource) extends Message
 
