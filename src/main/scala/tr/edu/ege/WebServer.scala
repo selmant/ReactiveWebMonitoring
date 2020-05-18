@@ -12,7 +12,7 @@ import tr.edu.ege.messages.Messages.StartServer
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.io.StdIn
 
-class WebServer extends Actor {
+class WebServer extends Actor{
     implicit val system: ActorSystem = context.system
     private implicit val dispatcher: ExecutionContextExecutor = system.dispatcher
     private implicit val materialize: ActorMaterializer = ActorMaterializer()(context)
@@ -27,16 +27,16 @@ class WebServer extends Actor {
             )
         }
     }
+    val serverFuture: Future[Http.ServerBinding] = Http().bindAndHandle(routes, "localhost", 4567)
 
+    StdIn.readLine()
+    serverFuture
+        .flatMap(_.unbind())
+        .onComplete(_ => system.terminate())
 
     override def receive: Receive = {
         case StartServer =>
-            val serverFuture: Future[Http.ServerBinding] = Http().bindAndHandle(routes, "localhost", 4567)
+            println("asd")
 
-            println("Server started ...")
-            StdIn.readLine()
-            serverFuture
-                .flatMap(_.unbind())
-                .onComplete(_ => system.terminate())
     }
 }

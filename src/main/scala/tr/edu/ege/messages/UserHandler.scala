@@ -15,7 +15,7 @@ object UserHandler {
     sealed trait UserResponse
 
     case class UserNotFound(username: String) extends UserResponse
-    case class UserCreated(user: User) extends UserResponse
+    case object UserCreated extends UserResponse
     case class UserDeleted(username: String) extends UserResponse
     case object UserAlreadyExist extends UserResponse
 

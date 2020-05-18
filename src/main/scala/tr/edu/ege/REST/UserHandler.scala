@@ -22,21 +22,31 @@ class UserHandler extends Actor with ActorLogging {
             (redisActor ? FetchRequest(s"user:$username")).onComplete {
                 case Success(value) =>
                     value match {
-                        case Some(user: String) =>
-                            log.debug(s"User is Found $user")
-                            currentSender ! user
-                        case None =>
-                            val currentSender = sender()
-                            currentSender ! UserNotFound
+                        case FetchResult(result) =>
+                            result match {
+                                case Some(password: String) =>
+                                    log.info(s"User is Found $username $password")
+                                    currentSender ! User(username, password)
+                                case None =>
+                                    log.info(s"User is Not Found")
+                                    currentSender ! User("", "")
+                            }
+                        case None => currentSender ! User("", "")
                     }
+                case _ => currentSender ! User("", "")
             }
-        case AddUser(username, user) =>
-            (redisActor ? AddRequest(s"user:$username", user)).onComplete {
+        case AddUser(username, password) =>
+            val currentSender = sender()
+            (redisActor ? AddRequest(s"user:$username", password)).onComplete {
                 case Success(value) => value match {
                     case AddResult(res) if !res =>
                         log.error("An error occurred while adding new user to Redis.")
+                        currentSender ! UserAlreadyExist
                     case AddResult(res) if res =>
-                        log.debug("New User added to the Redis successfully.")
+                        log.info("New User added to the Redis successfully.")
+                        currentSender ! UserCreated
+
+
                 }
                 case Failure(exception) => throw exception
             }
