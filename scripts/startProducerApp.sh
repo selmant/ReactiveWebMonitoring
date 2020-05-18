@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-cd ~/Repositories/akka-sample-sharding-scala/ || exit
+cd ~/IdeaProjects/ReactiveWebMonitoring/ || exit
 
-sbt "runMain akka.Main sample.sharding.Main"
+sbt "runMain akka.Main tr.edu.ege.Main"
