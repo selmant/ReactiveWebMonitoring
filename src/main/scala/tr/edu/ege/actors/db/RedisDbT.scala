@@ -34,4 +34,8 @@ object RedisDbT {
 
   case class GetSetRequest(key: String)
 
+  case class GetSetResult(result: Set[String])
+
+  case class RemoveFromSetRequest(key: String, value: String)
+
 }

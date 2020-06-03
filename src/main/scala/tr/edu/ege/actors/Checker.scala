@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, OneForOneStrategy, Props, ReceiveTimeout
 import akka.event.LoggingReceive
 import akka.pattern.ask
 import akka.util.Timeout
-import tr.edu.ege.actors.db.RedisDbT.{AddRequest, AddResult, FetchRequest, FetchResult, AddInSetRequest}
+import tr.edu.ege.actors.db.RedisDbT.{AddRequest, AddResult, FetchRequest, FetchResult}
 import tr.edu.ege.messages.Messages
 import tr.edu.ege.models.Job
 
@@ -26,7 +26,7 @@ class Checker extends Actor with ActorLogging {
   //  context.setReceiveTimeout(100.seconds)
 
   override def receive: Receive = LoggingReceive {
-    case msg@Messages.Check(resource, user) =>
+    case msg@Messages.Check(resource) =>
       log.info(s"Got check message:$msg")
 
       // TODO
@@ -41,7 +41,7 @@ class Checker extends Actor with ActorLogging {
                 case Some(topic) =>
                   log.debug(s"Got topic from redis:$topic")
                   val scheduler = context.actorSelection("/user/app/scheduler")
-                  scheduler ! Messages.Schedule(resource)
+                  //scheduler ! Messages.Schedule(resource)
 
                 case None =>
                   val newTopic = UUID.randomUUID().toString
@@ -51,7 +51,7 @@ class Checker extends Actor with ActorLogging {
                       case AddResult(status) if status =>
                         log.debug("Element successfully added to Redis.")
                         val scheduler = context.actorSelection("/user/app/scheduler")
-                        scheduler ! Messages.Schedule(resource)
+                        //scheduler ! Messages.Schedule(resource)
 
                       case AddResult(status) if !status => log.warning("Element can not added to Redis.")
                     }
@@ -62,15 +62,6 @@ class Checker extends Actor with ActorLogging {
                         reason = s"An error occurred while adding element to Redis",
                         mayBeThrowable = Some(value = exception)
                       )
-                  }
-                  user.foreach { usr =>
-                    (redisActor ? AddInSetRequest(s"user:${usr.username}:topics", s"${resource.url}")).onComplete {
-                      case Success(value) => value match {
-                        case AddResult(status) if status =>
-                          log.debug("Topic successfully added to User Set.")
-                        case AddResult(status) if !status => log.warning("Topic can not added to User Set.")
-                      }
-                    }
                   }
               }
           }

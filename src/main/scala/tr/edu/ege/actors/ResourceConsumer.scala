@@ -35,7 +35,7 @@ class ResourceConsumer(resource: Resource) extends Actor with ActorLogging {
       log.info(s"Message: $record")
       if (resource.mayBeQuery.isDefined) {
         val extractor = context.actorOf(Props[XmlExtractor])
-        extractor ! ExtractXMLResult(resource, record.value())
+        extractor ! ExtractXMLResult(resource, record.value(), record.topic())
       }
       sender() ! Ack // ack to allow the stream to proceed sending more elements
 

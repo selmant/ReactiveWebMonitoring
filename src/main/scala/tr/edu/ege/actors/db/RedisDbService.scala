@@ -101,16 +101,27 @@ class RedisDbService(val configName: String, val path: String, val timeout: Fini
           log.error(ex,"Error Adding Element To Set : {}", ex.getMessage)
           currentSender ! AddResult(false)
       }
+    case req: RemoveFromSetRequest =>
+      val currentSender = sender()
+      val sremFut = client.sRem(req.key, req.value)
+      sremFut.onComplete {
+        case Success(res) =>
+          currentSender ! AddResult(true)
+        case Failure(ex) =>
+          log.error(ex,"Error Removing Element From Set : {}", ex.getMessage)
+          currentSender ! AddResult(false)
+      }
 
     case req: GetSetRequest =>
       val currentSender = sender()
       val smembersFut = client.sMembers(req.key)
       smembersFut.onComplete {
         case Success(res) =>
-          currentSender ! res
+          log.info("Set result found at Redis")
+          currentSender ! GetSetResult(res)
         case Failure(ex) =>
           log.error(ex,"Error Getting Set from Redis : {}", ex.getMessage)
-          currentSender ! None
+          currentSender ! GetSetResult(Set())
       }
   }
 

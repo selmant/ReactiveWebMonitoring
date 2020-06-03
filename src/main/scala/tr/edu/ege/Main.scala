@@ -22,9 +22,6 @@ class Main extends Actor with ActorLogging {
 
   val redisClient: ActorRef = context.actorOf(Props(new RedisDbService("redis.conf", "scredis", FiniteDuration(5, "seconds"))), "redisActor")
 
-  val webServer: ActorRef = context.actorOf(Props[WebServer], "webserver")
-  webServer ! StartServer
-
   //  context.watch(scheduler)
   val pubMedBaseURI = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmax=999999999&api_key=f3ddb4c1de06900a117c889d4cfbf0666808"
 

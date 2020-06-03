@@ -1,20 +1,19 @@
 package tr.edu.ege.messages
 
-import tr.edu.ege.messages.UserHandler.User
 import tr.edu.ege.models.{Job, Resource}
 
 object Messages {
 
-  case class Submit(resource: Resource, user: Option[User] = None) extends Message
+  case class Submit(resource: Resource) extends Message
 
-  case class Check(resource: Resource, user: Option[User] = None) extends Message
+  case class Check(resource: Resource) extends Message
 
   case class Fetch(resource: Resource) extends Message
 
   case class Result(resource: Resource, payload: String) extends Message
   case class ExtractJsonResult(resource: Resource, payload: String) extends Message
   case class ExtractHTMLResult(resource: Resource, payload: String) extends Message
-  case class ExtractXMLResult(resource: Resource, payload: String) extends Message
+  case class ExtractXMLResult(resource: Resource, payload: String, topic: String) extends Message
 
   object UniqueResult {
     def fromResult(result: Result): UniqueResult = {
@@ -43,5 +42,7 @@ object Messages {
   case class Schedule(resource: Resource) extends Message
 
   case class StartServer() extends Message
+
+  case class Started(resource: Resource) extends Message
 
 }

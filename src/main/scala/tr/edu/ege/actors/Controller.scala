@@ -14,11 +14,11 @@ class Controller extends Actor with ActorLogging {
 //  context.setReceiveTimeout(100.seconds)
 
   def receive: Receive = LoggingReceive {
-    case Messages.Submit(resource,user) =>
+    case Messages.Submit(resource) =>
       log.debug("Sending resource:{} to checker actor.", resource.toString)
       val checker = context.actorSelection("/user/app/checker")
 //      context.watch(checker)
-      checker ! Messages.Check(resource,user)
+      checker ! Messages.Check(resource)
 
     case Terminated(actor) =>
       log.error("Actor:{} terminated.", actor.path.toString)

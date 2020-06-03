@@ -10,8 +10,10 @@ import io.circe.syntax._
 import tr.edu.ege.actors.db.RedisDbT.{AddRequest, AddResult, FetchRequest, FetchResult}
 import tr.edu.ege.messages.Messages
 import tr.edu.ege.messages.Messages.ExtractXMLResult
+import tr.edu.ege.messages.TopicConsumer.PushNewChanges
 import tr.edu.ege.models.Resource
 
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
 import scala.util.{Failure, Success}
@@ -19,10 +21,11 @@ import scala.xml.{Elem, NodeSeq, XML}
 
 class XmlExtractor extends Actor with ActorLogging {
   implicit val timeout: Timeout = FiniteDuration(5, "seconds")
-  private val redisActor = context.system.actorSelection("user/redisActor")
+  private val redisActor = context.system.actorSelection("user/app/redisActor")
 
   override def receive: Receive = LoggingReceive {
     case result: ExtractXMLResult =>
+      val topicConsumer = context.system.actorSelection(s"/user/webserver/pubhandler/${result.topic}")
       val xmlString = result.payload
       val xml: Elem = XML.loadString(xmlString)
       val query = result.resource.mayBeQuery.get
@@ -45,23 +48,13 @@ class XmlExtractor extends Actor with ActorLogging {
                   case Right(idsSet) =>
                     log.info(s"Last ids:${idsSet.toString} decoded from json")
                     val differences: Set[Int] = currentIds.diff(idsSet)
-                    if (differences.nonEmpty) {
-                      differences.foreach(getPublicationAbstract)
-                    } else {
-                      log.info("New publication not found!")
-                    }
-
+                    topicConsumer ! PushNewChanges(differences.to(mutable.Set))
                   case Left(error) => log.error(error.getMessage)
                 }
 
               case None =>
                 log.warning(s"No Redis value found with $key")
-                for {
-                  newlyDetectedId <- currentIds
-                } yield {
-                  getPublicationAbstract(newlyDetectedId)
-                }
-
+                topicConsumer ! PushNewChanges(currentIds.to(mutable.Set))
             }
         }
         case Failure(exception) => throw exception

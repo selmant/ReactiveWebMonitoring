@@ -42,11 +42,12 @@ object DigestionKafka extends App with LazyLogging {
     name = "consumer-actor"
   )
 
-  private val consumerSink = Sink.actorRefWithAck(
+  private val consumerSink = Sink.actorRefWithBackpressure(
     ref = consumerActor,
     onInitMessage = StreamInitialized,
     ackMessage = Ack,
-    onCompleteMessage = StreamCompleted
+    onCompleteMessage = StreamCompleted,
+    onFailureMessage = StreamFailure
   )
 
   private val consumerSettings = ConsumerSettings(_system, new StringDeserializer, new StringDeserializer)
@@ -62,7 +63,6 @@ object DigestionKafka extends App with LazyLogging {
             settings = consumerSettings.withClientId(s"client-${UUID.randomUUID()}"),
             subscription = Subscriptions.topics(topic)
           )
-            //    .filter { message: ConsumerRecord[String, String] => message.key() == url } TODO key kontrolü eklenecek
             .to(consumerSink)
             .run()
 

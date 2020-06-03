@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import akka.event.LoggingReceive
 import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
 import tr.edu.ege.messages.Messages
-import tr.edu.ege.messages.Messages.Schedule
+import tr.edu.ege.messages.Messages.{Schedule, Started}
 
 class Scheduler extends Actor with ActorLogging {
 
@@ -18,7 +18,7 @@ class Scheduler extends Actor with ActorLogging {
           name = jobName,
           receiver = sender(),
           msg = Messages.Fetch(m.resource),
-          cronExpression = "*/2 * * ? * *" // Will fire every 20 seconds
+          cronExpression = "*/20 * * ? * *" // Will fire every 20 seconds
         )
         log.info("Job: {} scheduled at: {}.", jobName, schedule)
         log.debug("Running schedule jobs: {}", quartzScheduler.runningJobs)
@@ -27,5 +27,13 @@ class Scheduler extends Actor with ActorLogging {
           exception.printStackTrace()
         //          context.parent ! Messages.JobFailed(job, reason = "Illegal argument", Some(exception))
       }
+    case Started(resource) =>
+      sender() ! true
+      var exist:Boolean = false
+      quartzScheduler.runningJobs.foreach(job =>{
+        exist = exist || job._1 == resource.url
+      })
+      log.debug(s"resource is started : $exist")
+      sender() ! exist
   }
 }

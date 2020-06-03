@@ -7,7 +7,8 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.PathDirectives.pathPrefix
 import akka.stream.ActorMaterializer
-import tr.edu.ege.REST.{PubHandler, RouteConfig, UserHandler}
+import tr.edu.ege.REST.RouteConfig
+import tr.edu.ege.REST.actors.{PubHandler, UserHandler}
 import tr.edu.ege.messages.Messages.StartServer
 
 import scala.concurrent.ExecutionContextExecutor
