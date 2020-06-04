@@ -26,12 +26,7 @@ class XmlExtractor extends Actor with ActorLogging {
   override def receive: Receive = LoggingReceive {
     case result: ExtractXMLResult =>
       val topicConsumer = context.system.actorSelection(s"/user/webserver/pubhandler/${result.topic}")
-      val xmlString = result.payload
-      val xml: Elem = XML.loadString(xmlString)
-      val query = result.resource.mayBeQuery.get
-      val ns: NodeSeq = xml
-      val idElems: NodeSeq = query.foldLeft(ns)(op = (e, s) => e \ s)
-      val currentIds: Set[Int] = idElems.map(_.text.toInt).toSet
+      val currentIds: Set[Int] = getSetFromXML(result.payload, result.resource.mayBeQuery.get)
       log.info(s"Current ids extracted.[$currentIds]")
 
       val key = result.resource.asJson.noSpaces
@@ -42,16 +37,11 @@ class XmlExtractor extends Actor with ActorLogging {
         case Success(value) => value match {
           case FetchResult(res) =>
             res match {
-              case Some(idsJsonString) =>
+              case Some(xmlResult) =>
                 log.debug(s"Found a value at Redis with $key")
-                decode[Set[Int]](idsJsonString) match {
-                  case Right(idsSet) =>
-                    log.info(s"Last ids:${idsSet.toString} decoded from json")
-                    val differences: Set[Int] = currentIds.diff(idsSet)
-                    topicConsumer ! PushNewChanges(differences.to(mutable.Set))
-                  case Left(error) => log.error(error.getMessage)
-                }
-
+                val newIdsSet = getSetFromXML(xmlResult, result.resource.mayBeQuery.get)
+                val differences: Set[Int] = currentIds.diff(newIdsSet)
+                topicConsumer ! PushNewChanges(differences.to(mutable.Set))
               case None =>
                 log.warning(s"No Redis value found with $key")
                 topicConsumer ! PushNewChanges(currentIds.to(mutable.Set))
@@ -61,7 +51,7 @@ class XmlExtractor extends Actor with ActorLogging {
       }
 
       // Set new publication ids to the Redis as a last value
-      (redisActor ? AddRequest(key, currentIds.asJson.noSpaces)).onComplete {
+      (redisActor ? AddRequest(key, result.payload)).onComplete {
         case Success(value) => value match {
           case AddResult(res) if res => log.debug("Element successfully added to Redis.")
           case AddResult(res) if !res => log.error("An error occurred while adding element to Redis.")
@@ -80,5 +70,14 @@ class XmlExtractor extends Actor with ActorLogging {
     log.info(s"Url:$url forwarding to the Getter Actor.")
     val resource = Resource(url, None)
     context.actorOf(Props(new Getter(resource)))
+  }
+
+  private def getSetFromXML(payload: String, query: List[String]): Set[Int] = {
+    val xmlString = payload
+    val xml: Elem = XML.loadString(xmlString)
+    val ns: NodeSeq = xml
+    val idElems: NodeSeq = query.foldLeft(ns)(op = (e, s) => e \ s)
+    val ids: Set[Int] = idElems.map(_.text.toInt).toSet
+    ids
   }
 }

@@ -43,20 +43,9 @@ class Detector extends Actor with ActorLogging {
   private def handleUniqueResult(result: Messages.Result): Unit = {
     log.info("### Found unique result!")
 
-    (redisActor ? AddRequest(result.resource.asJson.noSpaces, result.payload)).onComplete {
-      case Success(value) => value match {
-        case AddResult(res) if !res =>
-          log.error("An error occurred while adding element to Redis.")
-
-        case AddResult(res) if res =>
-          log.debug("Unique result added to the Redis successfully.")
-          val uniqueResult = UniqueResult.fromResult(result)
-          //    context.parent ! uniqueResult
-          val publisher = context.actorSelection("/user/app/publisher")
-          publisher ! uniqueResult
-
-      }
-      case Failure(exception) => throw exception
-    }
+    val uniqueResult = UniqueResult.fromResult(result)
+    //    context.parent ! uniqueResult
+    val publisher = context.actorSelection("/user/app/publisher")
+    publisher ! uniqueResult
   }
 }

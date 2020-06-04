@@ -8,6 +8,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import tr.edu.ege.actors.db.RedisDbT.{AddRequest, AddResult, FetchRequest, FetchResult}
 import tr.edu.ege.messages.Messages
+import tr.edu.ege.messages.Messages.Started
 import tr.edu.ege.models.Job
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,7 +42,16 @@ class Checker extends Actor with ActorLogging {
                 case Some(topic) =>
                   log.debug(s"Got topic from redis:$topic")
                   val scheduler = context.actorSelection("/user/app/scheduler")
-                  //scheduler ! Messages.Schedule(resource)
+                  scheduler ! Messages.Schedule(resource)
+
+                  /*(scheduler ? Messages.Started).onComplete{
+                    case Success(value) =>
+                      value match {
+                        case false => scheduler ! Messages.Schedule(resource)
+                        case true =>log.debug(s"there is already job named ${resource.url}")
+                      }
+                    case Failure(exception)=> throw exception
+                  }*/
 
                 case None =>
                   val newTopic = UUID.randomUUID().toString
@@ -51,7 +61,7 @@ class Checker extends Actor with ActorLogging {
                       case AddResult(status) if status =>
                         log.debug("Element successfully added to Redis.")
                         val scheduler = context.actorSelection("/user/app/scheduler")
-                        //scheduler ! Messages.Schedule(resource)
+                        scheduler ! Messages.Schedule(resource)
 
                       case AddResult(status) if !status => log.warning("Element can not added to Redis.")
                     }

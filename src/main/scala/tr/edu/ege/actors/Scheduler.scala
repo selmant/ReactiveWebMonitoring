@@ -28,12 +28,6 @@ class Scheduler extends Actor with ActorLogging {
         //          context.parent ! Messages.JobFailed(job, reason = "Illegal argument", Some(exception))
       }
     case Started(resource) =>
-      sender() ! true
-      var exist:Boolean = false
-      quartzScheduler.runningJobs.foreach(job =>{
-        exist = exist || job._1 == resource.url
-      })
-      log.debug(s"resource is started : $exist")
-      sender() ! exist
+      sender() ! quartzScheduler.runningJobs.exists(job => job._1 == resource.url)
   }
 }

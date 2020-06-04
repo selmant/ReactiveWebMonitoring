@@ -107,7 +107,7 @@ class TopicConsumer(resource: Resource) extends Actor with LazyLogging {
       }
       changes.filterInPlace(!_.isDone)
       if (completeChanges.nonEmpty) {
-        currentSender ! ChangeResult(url, completeChanges)
+        currentSender ! Some(ChangeResult(url, completeChanges))
       } else {
         logger.debug("Nothing found at TopicConsumer")
         currentSender ! None
