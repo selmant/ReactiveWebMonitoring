@@ -73,7 +73,7 @@ class Publisher extends Actor with ActorLogging {
   }
 
   private def publishRecord(key: String, value: String, topic: String) = {
-    log.info("New record publishing...\nTopic:{}, Key:{}, Value:{}", topic, key, value)
+    log.info("New record publishing...\nTopic:{}, Key:{}", topic, key)
 
     val record = new ProducerRecord[String, String](topic, key, value)
     try {

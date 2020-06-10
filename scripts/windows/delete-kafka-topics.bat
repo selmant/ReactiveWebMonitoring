@@ -1,0 +1,1 @@
+C:\Apache\kafka_2.12-2.3.0\bin\windows\kafka-topics.bat --zookeeper localhost:2181 --delete --topic '\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b'

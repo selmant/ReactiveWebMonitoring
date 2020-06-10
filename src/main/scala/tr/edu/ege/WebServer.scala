@@ -35,7 +35,7 @@ class WebServer extends Actor {
 
   override def receive: Receive = {
     case StartServer =>
-      val futureBinding = Http().bindAndHandle(routes, "localhost", 4567)
+      val futureBinding = Http().bindAndHandle(routes, "0.0.0.0", 4567)
       futureBinding.onComplete {
         case Success(binding) =>
           val address = binding.localAddress

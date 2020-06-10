@@ -28,11 +28,11 @@ class Main extends Actor with ActorLogging {
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=asthma[mesh]+AND+leukotrienes[mesh]+AND+2009[pdat]"))
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=1")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=coronavirus[mesh]")) // Raw JSON Data
-  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=protein[mesh]+AND+diet[mesh]")) // Raw JSON Data
-  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=high[mesh]+AND+protein[mesh]")) // Raw JSON Data
-  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=whey[mesh]+AND+protein[mesh]")) // Raw JSON Data
+  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=protein[mesh]+AND+diet[mesh]+AND+2009[pdat]")) // Raw JSON Data
+  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=high[mesh]+AND+protein[mesh]+AND+2009[pdat]")) // Raw JSON Data
+  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=whey[mesh]+AND+protein[mesh]+AND+2009[pdat]")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=c-reactive[mesh]+AND+protein[mesh]")) // Raw JSON Data
-  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=metabolic[mesh]+AND+syndrome[mesh]")) // Raw JSON Data
+  //  controller ! Submit(Resource(s"$pubMedBaseURI&term=metabolic[mesh]+AND+syndrome[mesh]")) // Raw JSON Data-
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=nephrotic[mesh]+AND+syndrome[mesh]")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=irritable bowel[mesh]+AND+syndrome[mesh]")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=carpal tunnel[mesh]+AND+syndrome[mesh]")) // Raw JSON Data
@@ -44,7 +44,7 @@ class Main extends Actor with ActorLogging {
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=alzheimer[mesh]+AND+disease[mesh]")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=parkinson[mesh]+AND+disease[mesh]")) // Raw JSON Data
   //  controller ! Submit(Resource(s"$pubMedBaseURI&term=celiac[mesh]+AND+disease[mesh]")) // Raw JSON Data
-
+  // corona+AND+dna+AND+rna
   //  context.setReceiveTimeout(100.seconds)
 
   def receive: Receive = {

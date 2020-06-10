@@ -18,7 +18,7 @@ class Scheduler extends Actor with ActorLogging {
           name = jobName,
           receiver = sender(),
           msg = Messages.Fetch(m.resource),
-          cronExpression = "*/20 * * ? * *" // Will fire every 20 seconds
+          cronExpression = "*/30 * * ? * *" // Will fire every 20 seconds
         )
         log.info("Job: {} scheduled at: {}.", jobName, schedule)
         log.debug("Running schedule jobs: {}", quartzScheduler.runningJobs)

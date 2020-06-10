@@ -32,7 +32,7 @@ class ResourceConsumer(resource: Resource) extends Actor with ActorLogging {
 
     case record: ConsumerRecord[String, String] =>
       log.info(s"Consumed a new stream message for url:${resource.url}")
-      log.info(s"Message: $record")
+      log.debug(s"Message: $record")
       if (resource.mayBeQuery.isDefined) {
         val extractor = context.actorOf(Props[XmlExtractor])
         extractor ! ExtractXMLResult(resource, record.value(), record.topic())

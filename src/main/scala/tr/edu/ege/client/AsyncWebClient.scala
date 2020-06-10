@@ -23,7 +23,7 @@ object AsyncWebClient extends WebClient with LazyLogging{
       val statusCode = response.getStatusCode
       logger.info(s"Got status:$statusCode from url:$url")
       if (statusCode / 100 < 4)
-        p.success(response.getResponseBodyExcerpt(131072))
+        p.success(response.getResponseBodyExcerpt(999999999))
       else p.failure(BadStatus(statusCode))
     }, exec)
     p.future

@@ -50,7 +50,7 @@ class TopicConsumer(resource: Resource) extends Actor with LazyLogging {
   logger.info(s"TopicConsumer started for $url")
 
 
-  private val consumerActor = system.actorOf(
+  private val consumerActor = context.actorOf(
     props = Props(new ResourceConsumer(Resource(url, query))),
     name = "consumer-actor"
   )

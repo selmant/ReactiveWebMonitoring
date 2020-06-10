@@ -27,7 +27,7 @@ class XmlExtractor extends Actor with ActorLogging {
     case result: ExtractXMLResult =>
       val topicConsumer = context.system.actorSelection(s"/user/webserver/pubhandler/${result.topic}")
       val currentIds: Set[Int] = getSetFromXML(result.payload, result.resource.mayBeQuery.get)
-      log.info(s"Current ids extracted.[$currentIds]")
+      log.info(s"Current ids extracted. size :[${currentIds.size}]")
 
       val key = result.resource.asJson.noSpaces
       //      TODO consider using this style
